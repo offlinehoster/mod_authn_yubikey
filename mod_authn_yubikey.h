@@ -48,6 +48,7 @@ typedef struct
    */
   const char *validationProtocol;
   const char *validationHost;
+  const char *validationPath;
 } yubiauth_dir_cfg;
 
 static void *create_yubiauth_dir_cfg(apr_pool_t *pool, char *x);

@@ -594,6 +594,10 @@ static const command_rec authn_yubikey_cmds[] = {
                   (void*) APR_OFFSETOF(yubiauth_dir_cfg, validationHost),
                   ACCESS_CONF, "The host of the URL of the location where the key can be" \
           "authenticated"),
+    AP_INIT_TAKE1("AuthYkValidationPath", ap_set_string_slot,
+                  (void*) APR_OFFSETOF(yubiauth_dir_cfg, validationPath),
+                  ACCESS_CONF, "The path of the URL of the location where the key can be" \
+          "authenticated"),
     AP_INIT_FLAG("AuthYubiKeyExternalErrorPage", ap_set_flag_slot,
                   (void*) APR_OFFSETOF(yubiauth_dir_cfg, externalErrorPage),
                   ACCESS_CONF, "If SSL is required display internal error page, or display custom (406) error" \
@@ -618,6 +622,7 @@ static void *create_yubiauth_dir_cfg(apr_pool_t *pool, char *x)
     dir->userAuthDbFilename = NULL;
     dir->validationProtocol = NULL;
     dir->validationHost = NULL;
+    dir->validationPath = NULL;
 
     return dir;
 }
@@ -636,8 +641,9 @@ static void *merge_yubiauth_dir_cfg(apr_pool_t *pool, void *BASE, void *ADD)
   dir->userAuthDbFilename = (add->userAuthDbFilename == NULL) ? base->userAuthDbFilename : add->userAuthDbFilename;
   dir->tmpAuthDbFilename = (add->tmpAuthDbFilename == NULL) ? base->tmpAuthDbFilename : add->tmpAuthDbFilename;
 
-  dir->validationHost = (add->validationHost == NULL) ? base->validationHost : add->validationHost;
   dir->validationProtocol = (add->validationProtocol == NULL) ? base->validationProtocol : add->validationProtocol;
+  dir->validationHost = (add->validationHost == NULL) ? base->validationHost : add->validationHost;
+  dir->validationPath = (add->validationPath == NULL) ? base->validationPath : add->validationPath;
 
   /* Set defaults configuration here
    */
@@ -656,11 +662,14 @@ static void *merge_yubiauth_dir_cfg(apr_pool_t *pool, void *BASE, void *ADD)
   if (dir->tmpAuthDbFilename == NULL) {
     dir->tmpAuthDbFilename = ap_server_root_relative(pool, DEFAULT_TMP_DB);
   }
+  if (dir->validationProtocol == NULL) {
+   dir->validationProtocol = "https";
+  }
   if (dir->validationHost == NULL) {
    dir->validationHost = "api.yubico.com";
   }
-  if (dir->validationProtocol == NULL) {
-   dir->validationProtocol = "https";
+  if (dir->validationPath == NULL) {
+   dir->validationPath = "wsapi/verify";
   }
   return dir;
 }
