@@ -213,7 +213,7 @@ yubikey_client_request (yubikey_client_t client,
 {
   struct MemoryStruct chunk = { NULL, 0 };
   yubiauth_dir_cfg *cfg = ap_get_module_config(r->per_dir_config, &authn_yubikey_module);
-  const char *url_template = "%s://%s/wsapi/verify?id=%d&otp=%s";
+  const char *url_template = "%s://%s/%s?id=%d&otp=%s";
   char *url;
   char *user_agent = NULL;
   char *status;
@@ -223,11 +223,11 @@ yubikey_client_request (yubikey_client_t client,
   //char *proxy = "proxy.example.com";
   //char *proxyPwd = "username:password";
   
-  asprintf (&url, url_template, cfg->validationProtocol, cfg->validationHost, client->client_id, yubikey);
+  asprintf (&url, url_template, cfg->validationProtocol, cfg->validationHost, cfg->validationPath, client->client_id, yubikey);
 
   /* ap_log_rerror(APLOG_MARK, APLOG_ERR, 0, r,
-                              "DebugLogging: %s %d %s %s",
-                              url,cfg->timeoutSeconds,cfg->validationProtocol,cfg->validationHost);*/
+                              "Debug: Validation Url %s %d %s %s %s",
+                              url, cfg->timeoutSeconds, cfg->validationProtocol, cfg->validationHost, cfg->validationPath);*/
 
 
   if (!url)
